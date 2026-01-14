@@ -1,0 +1,43 @@
+<mapper namespace="com.musinsa.point.mapper.PointMapper">
+
+	<insert id="insertPoint" useGeneratedKeys="true" keyProperty="POINT_ID">
+        INSERT INTO POINT (
+            USER_ID, POINT_TYPE, POINT_FG,
+            ORIGINAL_AMOUNT, REMAIN_AMOUNT,
+            EXPIRED_DT, CREATE_DT
+        )
+        VALUES (
+            #{userId}, #{pointType}, #{pointFg},
+            #{originalAmount}, #{remainAmount},
+            #{expiredDt}, CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <select id="selectPoint" resultType="PointDto">
+        SELECT *
+        FROM POINT
+        WHERE USER_ID = #{userId}
+          AND POINT_TYTPE = 'EARN'
+          AND REMAIN_AMOUNT > 0
+          AND EXPIRED_DT > CURRENT_TIMESTAMP
+        ORDER BY
+          POINT_FG DESC,
+          EXPIRED_DT ASC,
+          CREATED_DT ASC
+        FOR UPDATE
+    </select>
+
+    <select id="selectUsablePoint" resultType="PointDto">
+        SELECT *
+        FROM POINT
+        WHERE POINT_ID = #{pointId}
+        FOR UPDATE
+    </select>
+    
+    <update id="updateRemainAmount">
+	    UPDATE POINT
+	    SET REMAIN_AMOUNT = #{remainAmount}
+	    WHERE POINT_ID = #{pointId}
+	</update>
+
+</mapper>
