@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bogue.assignment.api.mapper.PointMapper">
+
+	<insert id="insertPoint" useGeneratedKeys="true" keyProperty="pointId">
+        INSERT INTO POINT (
+            USER_ID, POINT_TYPE, POINT_FG,
+            ORIGINAL_AMOUNT, REMAIN_AMOUNT,
+            EXPIRED_DT, CREATE_DT
+        )
+        VALUES (
+            #{userId}, #{pointType}, #{pointFg},
+            #{originalAmount}, #{remainAmount},
+            #{expiredDt}, CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <select id="selectPoint" resultType="com.bogue.assignment.api.dto.PointDto">
+        SELECT *
+        FROM POINT
+        WHERE USER_ID = #{userId}
+          AND POINT_TYPE = 'EARN'
+          AND REMAIN_AMOUNT > 0
+          AND EXPIRED_DT > CURRENT_TIMESTAMP
+        ORDER BY
+          POINT_FG DESC,
+          EXPIRED_DT ASC,
+          CREATED_DT ASC
+        FOR UPDATE
+    </select>
+
+    <select id="selectUsablePoint" resultType="com.bogue.assignment.api.dto.PointDto">
+        SELECT *
+        FROM POINT
+        WHERE POINT_ID = #{pointId}
+        FOR UPDATE
+    </select>
+    
+    <update id="updateRemainAmount">
+	    UPDATE POINT
+	    SET REMAIN_AMOUNT = #{remainAmount}
+	    WHERE POINT_ID = #{pointId}
+	</update>
+
+</mapper>
